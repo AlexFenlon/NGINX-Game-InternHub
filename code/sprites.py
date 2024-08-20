@@ -1,7 +1,6 @@
-from settings import *
+import pygame
 
 class Sprite(pygame.sprite.Sprite):
-    def __init__(self, pos, surf, groups):
-        super().__init__(groups)
-        self.image = surf
-        self.rect = self.image.get_frect(topleft = pos)
+    def __init__(self, position, image, group):
+        super().__init__(group)
+        self.image = image
