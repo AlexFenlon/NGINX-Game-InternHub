@@ -102,8 +102,18 @@ class Game:
                             self.current_character.speech_bubble = pygame.Surface((300, 100))
                             self.current_character.speech_bubble.fill((255, 255, 255))
                             font = pygame.font.Font(None, 36)
-                            text = font.render(dialogue, True, (0, 0, 0))
-                            self.current_character.speech_bubble.blit(text, (10, 10))
+                            max_text_width = 280  # Adjust according to your bubble size and padding
+
+                            # Wrap the text to fit within the bubble
+                            lines = wrap_text(dialogue, font, max_text_width)
+
+                            # Render each line separately
+                            y_offset = 10
+                            for line in lines:
+                                text = font.render(line, True, (0, 0, 0))
+                                self.current_character.speech_bubble.blit(text, (10, y_offset))
+                                y_offset += font.get_height()
+
                             self.current_character.speech_bubble_start_time = pygame.time.get_ticks()
                     elif key == pygame.K_f:
                         for character in [self.alex, self.spencer, self.stephen]:
@@ -135,8 +145,33 @@ class Game:
 
             pygame.display.update()
 
+def wrap_text(text, font, max_width):
+    """Wrap text into multiple lines that fit within max_width."""
+    words = text.split(' ')
+    lines = []
+    current_line = ""
+
+    for word in words:
+        # Check if adding the next word exceeds the max width
+        test_line = current_line + word + " "
+        if font.size(test_line)[0] <= max_width:
+            current_line = test_line
+        else:
+            # If it exceeds, save the current line and start a new one
+            lines.append(current_line.strip())
+            current_line = word + " "
+
+    # Add the last line
+    if current_line:
+        lines.append(current_line.strip())
+
+    return lines
+
+
+
 
 if __name__ == '__main__':
     game = Game()
     game.run()
     pygame.display.update()
+
