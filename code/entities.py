@@ -13,7 +13,7 @@ class Entity(pygame.sprite.Sprite):
         self.image = self.frames[self.get_state()][self.frame_index]
         self.rect = self.image.get_rect(center=pos)
         self.following = []
-        self.trail_distance = 50
+        self.trail_distance = 100
         self.world_rect = world_rect
 
     def move(self, dt):
