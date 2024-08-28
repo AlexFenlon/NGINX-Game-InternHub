@@ -53,9 +53,13 @@ class Game:
         ]
 
         stephen_dialogs = [
-            "Hey, I'm Stephen, the grass boss.",
-            "The grasslands are beautiful, aren't they?",
-            "Be careful of wild creatures here."
+            "Hey, I'm Stephen, yet another engineering intern (theres dozens of us).",
+            "Graduating this year from munster Technological University?",
+            "I have been passionate about tech from an early age.", # talk about building pc at 13
+            "I am on the delivery engineering team",
+            "I work under Sergey and my Mentor/Buddy Sean",
+            "The rest of the team have been amazing to work with on my journey",
+            "Im late! The lads are waiting in the conference room"
         ]
 
         self.alex = Character((TILE_SIZE * 34, TILE_SIZE * 18), self.overworld_frames['characters']['alex'],
