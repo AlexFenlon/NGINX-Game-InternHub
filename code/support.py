@@ -1,7 +1,6 @@
 from settings import *
 from os.path import join
 from os import walk
-from pytmx.util_pygame import load_pygame
 
 def import_image(*path, alpha = True, format = 'png'):
     full_path = join(*path) + f'.{format}'

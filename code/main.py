@@ -21,7 +21,7 @@ class Game:
             'characters': all_character_import(base_dir, 'graphics', 'characters')
         }
 
-        self.world_image_path = os.path.join(base_dir, 'data', 'maps', 'world.png')
+        self.world_image_path = os.path.join(base_dir, 'graphics', 'map', 'world.png')
         try:
             self.world_image = pygame.image.load(self.world_image_path).convert_alpha()
         except pygame.error as e:
@@ -37,10 +37,12 @@ class Game:
 
         TILE_SIZE = 32
 
-        self.alex = Character((TILE_SIZE * 2, TILE_SIZE * 2), self.overworld_frames['characters']['player'], self.all_sprites, self.world_rect)
-        self.spencer = Character((TILE_SIZE * 4, TILE_SIZE * 2), self.overworld_frames['characters']['fire_boss'], self.all_sprites, self.world_rect)
-        self.stephen = Character((TILE_SIZE * 6, TILE_SIZE * 2), self.overworld_frames['characters']['grass_boss'], self.all_sprites, self.world_rect)
-
+        self.alex = Character((TILE_SIZE * 36, TILE_SIZE * 4), self.overworld_frames['characters']['alex'],
+                              self.all_sprites, self.world_rect)
+        self.spencer = Character((TILE_SIZE * 38, TILE_SIZE * 65), self.overworld_frames['characters']['spencer'],
+                                 self.all_sprites, self.world_rect)
+        self.stephen = Character((TILE_SIZE * 7, TILE_SIZE * 95), self.overworld_frames['characters']['stephen'],
+                                 self.all_sprites, self.world_rect)
         self.current_character = self.alex
         self.alex.current_character = self.alex
         self.camera_target = self.alex
