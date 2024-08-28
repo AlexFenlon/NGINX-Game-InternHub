@@ -64,11 +64,24 @@ class Character(Entity):
         self.team = []
         self.is_team_member = False
         self.current_character = None
-        self.dialogue = "Hello! I am a character. Press 'E' to interact."
+        self.dialogs = [
+            "Hello! I am a character. Press 'E' to interact.",
+            "This is the second line of dialog.",
+            "This is the third line of dialog."
+        ]
+        self.current_dialog_index = 0
         self.speech_bubble = None
         self.speech_bubble_start_time = None
         self.stop_moving = False
         self.following_leader = None  # Track the leader this character is following
+
+    def interact(self):
+        # Get the current dialog based on the current index
+        return self.dialogs[self.current_dialog_index]
+
+    def next_dialog(self):
+        # Cycle to the next dialog
+        self.current_dialog_index = (self.current_dialog_index + 1) % len(self.dialogs)
 
     def input(self):
         if self == self.current_character:
@@ -93,7 +106,7 @@ class Character(Entity):
                 character.start_following(self.current_character)
                 return f"{character} is now following {self.current_character}"
 
-        return self.dialogue
+        return self.dialogs[self.current_dialog_index]
 
     def update(self, dt):
         super().update(dt)
