@@ -38,18 +38,19 @@ class Game:
         TILE_SIZE = 32
 
         alex_dialogs = [
-            "Hi, I'm Alex! Engineering Intern at F5/NGINX", # im a graduate software developer from MTU
-            "Before University, I loved to tinker and mod software", #talk about playing around with tinkering with android devices and modding games
-            "I'm on the NGINX Ingress Team.", #talk about what I do, what is unique what is ingress controller, what the team deos
-            "I worked with Jim and Shaun on IP listener and Telemetry.", # expand on this talk about specific diffuclt issues (IP listener and telemety)
+            "Hi, I'm Alex! An Engineering Intern at F5/NGINX!", # im a graduate software developer from MTU
+            "Since a young age, I loved to tinker and mod software!", #talk about playing around with tinkering with android devices and modding games
+            "I had a coderDojo course when I was younger.", # talk about learning html for the first time and learning scratch
+            "I'm on the NGINX Ingress Controller Team.", #talk about what I do, what is unique what is ingress controller, what the team deos
+            "My biggest additions is on IP listener and Telemetry.", # expand on this talk about specific diffuclt issues (IP listener and telemety)
             "Oh wait! I need to go to the conference room!"
         ]
 
         spencer_dialogs = [
             "My name Spencer and I'm an Intern at F5/NGINX", # intro, college, internship since when and until when, speak about the various events held in the office
             "I'm on the NGINX Agent Team.", # What agent is, what its like working on the team, shoutout buddy and manager and rest of team
-            "I've had the chance to work on some interesting projects." # briefly talk about one of security projects
-            "And this is how we navigate through F5 as interns", # all together
+            "I've had the chance to work on some interesting projects.", # briefly talk about one of security projects
+            "And this is how we navigate through F5 as interns!" # all together
         ]
 
         stephen_dialogs = [
