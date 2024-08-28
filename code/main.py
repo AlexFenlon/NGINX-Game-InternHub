@@ -46,9 +46,10 @@ class Game:
         ]
 
         spencer_dialogs = [
-            "I'm Spencer, ready to fight!",
-            "This area seems dangerous. Stay alert!",
-            "Have you checked your inventory lately?"
+            "My name Spencer and I'm an Intern at F5/NGINX", # intro, college, internship since when and until when, speak about the various events held in the office
+            "I'm on the NGINX Agent Team.", # What agent is, what its like working on the team, shoutout buddy and manager and rest of team
+            "I've had the chance to work on some interesting projects." # briefly talk about one of security projects
+            "And this is how we navigate through F5 as interns", # all together
         ]
 
         stephen_dialogs = [
