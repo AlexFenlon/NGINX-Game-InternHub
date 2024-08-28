@@ -21,7 +21,7 @@ class Game:
             'characters': all_character_import(base_dir, 'graphics', 'characters')
         }
 
-        self.world_image_path = os.path.join(base_dir, 'data', 'maps', 'world.png')
+        self.world_image_path = os.path.join(base_dir, 'graphics', 'map', 'world.png')
         try:
             self.world_image = pygame.image.load(self.world_image_path).convert_alpha()
         except pygame.error as e:
@@ -38,9 +38,11 @@ class Game:
         TILE_SIZE = 32
 
         alex_dialogs = [
-            "Hi, I'm Alex! Let's explore the world.",
-            "The weather today is great for an adventure.",
-            "Did you know? You can switch characters with 1, 2, or 3."
+            "Hi, I'm Alex! Engineering Intern at F5/NGINX", # im a graduate software developer from MTU
+            "Before University, I loved to tinker and mod software", #talk about playing around with tinkering with android devices and modding games
+            "I'm on the NGINX Ingress Team.", #talk about what I do, what is unique what is ingress controller, what the team deos
+            "I worked with Jim and Shaun on IP listener and Telemetry.", # expand on this talk about specific diffuclt issues (IP listener and telemety)
+            "Oh wait! I need to go to the conference room!"
         ]
 
         spencer_dialogs = [
@@ -55,11 +57,11 @@ class Game:
             "Be careful of wild creatures here."
         ]
 
-        self.alex = Character((TILE_SIZE * 2, TILE_SIZE * 2), self.overworld_frames['characters']['player'],
+        self.alex = Character((TILE_SIZE * 34, TILE_SIZE * 18), self.overworld_frames['characters']['alex'],
                               self.all_sprites, self.world_rect, alex_dialogs)
-        self.spencer = Character((TILE_SIZE * 4, TILE_SIZE * 2), self.overworld_frames['characters']['fire_boss'],
-                                 self.all_sprites, self.world_rect, spencer_dialogs)
-        self.stephen = Character((TILE_SIZE * 6, TILE_SIZE * 2), self.overworld_frames['characters']['stephen'],
+        self.spencer = Character((TILE_SIZE * 39, TILE_SIZE * 65), self.overworld_frames['characters']['spencer'],
+                                 self.all_sprites, self.world_rect,spencer_dialogs)
+        self.stephen = Character((TILE_SIZE * 7, TILE_SIZE * 95), self.overworld_frames['characters']['stephen'],
                                  self.all_sprites, self.world_rect, stephen_dialogs)
 
         self.current_character = self.alex
