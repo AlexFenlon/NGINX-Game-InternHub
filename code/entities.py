@@ -57,18 +57,13 @@ class Entity(pygame.sprite.Sprite):
         self.move(dt)
         self.animate(dt)
 
-
 class Character(Entity):
-    def __init__(self, pos, frames, groups, world_rect):
+    def __init__(self, pos, frames, groups, world_rect, dialogs=None):
         super().__init__(pos, frames, groups, world_rect)
         self.team = []
         self.is_team_member = False
         self.current_character = None
-        self.dialogs = [
-            "Hello! I am a character. Press 'E' to interact.",
-            "This is the second line of dialog.",
-            "This is the third line of dialog."
-        ]
+        self.dialogs = dialogs if dialogs else ["Default dialog."]  # Assign the dialog list or a default one
         self.current_dialog_index = 0
         self.speech_bubble = None
         self.speech_bubble_start_time = None
@@ -76,7 +71,7 @@ class Character(Entity):
         self.following_leader = None  # Track the leader this character is following
 
     def interact(self):
-        # Get the current dialog based on the current index
+         # Get the current dialog based on the current index
         return self.dialogs[self.current_dialog_index]
 
     def next_dialog(self):

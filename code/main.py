@@ -37,9 +37,30 @@ class Game:
 
         TILE_SIZE = 32
 
-        self.alex = Character((TILE_SIZE * 2, TILE_SIZE * 2), self.overworld_frames['characters']['player'], self.all_sprites, self.world_rect)
-        self.spencer = Character((TILE_SIZE * 4, TILE_SIZE * 2), self.overworld_frames['characters']['fire_boss'], self.all_sprites, self.world_rect)
-        self.stephen = Character((TILE_SIZE * 6, TILE_SIZE * 2), self.overworld_frames['characters']['grass_boss'], self.all_sprites, self.world_rect)
+        alex_dialogs = [
+            "Hi, I'm Alex! Let's explore the world.",
+            "The weather today is great for an adventure.",
+            "Did you know? You can switch characters with 1, 2, or 3."
+        ]
+
+        spencer_dialogs = [
+            "I'm Spencer, ready to fight!",
+            "This area seems dangerous. Stay alert!",
+            "Have you checked your inventory lately?"
+        ]
+
+        stephen_dialogs = [
+            "Hey, I'm Stephen, the grass boss.",
+            "The grasslands are beautiful, aren't they?",
+            "Be careful of wild creatures here."
+        ]
+
+        self.alex = Character((TILE_SIZE * 2, TILE_SIZE * 2), self.overworld_frames['characters']['player'],
+                              self.all_sprites, self.world_rect, alex_dialogs)
+        self.spencer = Character((TILE_SIZE * 4, TILE_SIZE * 2), self.overworld_frames['characters']['fire_boss'],
+                                 self.all_sprites, self.world_rect, spencer_dialogs)
+        self.stephen = Character((TILE_SIZE * 6, TILE_SIZE * 2), self.overworld_frames['characters']['stephen'],
+                                 self.all_sprites, self.world_rect, stephen_dialogs)
 
         self.current_character = self.alex
         self.alex.current_character = self.alex
