@@ -1,5 +1,7 @@
+import itertools
+
 import pygame
-from settings import ANIMATION_SPEED, TILE_SIZE
+from npc_behaviors import Behavior
 
 
 class Entity(pygame.sprite.Sprite):
@@ -9,7 +11,8 @@ class Entity(pygame.sprite.Sprite):
         self.frames = frames
         self.facing_direction = 'down'
         self.direction = pygame.math.Vector2()
-        self.speed = 250
+        self.speed = 125
+        self.animation_speed = 6
         self.image = self.frames[self.get_state()][self.frame_index]
         self.rect = self.image.get_rect(center=pos)
         self.following = []
@@ -31,7 +34,7 @@ class Entity(pygame.sprite.Sprite):
             self.rect.bottom = self.world_rect.bottom
 
     def animate(self, dt):
-        self.frame_index += ANIMATION_SPEED * dt
+        self.frame_index += self.animation_speed * dt
         self.image = self.frames[self.get_state()][int(self.frame_index % len(self.frames[self.get_state()]))]
 
     def get_state(self):
@@ -57,9 +60,11 @@ class Entity(pygame.sprite.Sprite):
         self.move(dt)
         self.animate(dt)
 
+
 class Character(Entity):
     def __init__(self, pos, frames, groups, world_rect, dialogs=None):
         super().__init__(pos, frames, groups, world_rect)
+        self.behavior = Behavior()
         self.team = []
         self.is_team_member = False
         self.current_character = None
@@ -70,8 +75,18 @@ class Character(Entity):
         self.stop_moving = False
         self.following_leader = None  # Track the leader this character is following
 
+        self.target_position = None  # The target position the character should move toward
+        self.reached_target = True  # Indicates whether the character has reached the target
+
+    def set_behavior(self, behavior):
+        self.behavior = behavior
+
+    def move_to(self, target_position):
+        self.target_position = pygame.math.Vector2(target_position)
+        self.reached_target = False
+
     def interact(self):
-         # Get the current dialog based on the current index
+        # Get the current dialog based on the current index
         return self.dialogs[self.current_dialog_index]
 
     def next_dialog(self):
@@ -79,7 +94,7 @@ class Character(Entity):
         self.current_dialog_index = (self.current_dialog_index + 1) % len(self.dialogs)
 
     def input(self):
-        if self == self.current_character:
+        if self == self.current_character and self.reached_target:
             keys = pygame.key.get_pressed()
             input_vector = pygame.math.Vector2()
 
@@ -92,18 +107,35 @@ class Character(Entity):
             if keys[pygame.K_d]:
                 input_vector.x += 1
 
+
+            # Determine speed and animation speed based on keys pressed
+            if keys[pygame.K_LSHIFT] and keys[pygame.K_SPACE]:
+                # Super sprint
+                self.speed = 1000
+                self.animation_speed = 24
+            elif keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
+                # Normal sprint
+                self.speed = 250
+                self.animation_speed = 12
+            else:
+                # Normal walking
+                self.speed = 125
+                self.animation_speed = 6
+
             self.direction = input_vector.normalize() if input_vector.length() > 0 else pygame.math.Vector2()
 
-    def interact(self):
-        # Allow the current character to make others follow them
-        for character in self.current_character.team:
-            if pygame.sprite.collide_rect(self.current_character, character):
-                character.start_following(self.current_character)
-                return f"{character} is now following {self.current_character}"
-
-        return self.dialogs[self.current_dialog_index]
-
     def update(self, dt):
+        if self.behavior:
+            self.behavior.update(self, dt)
+        if not self.reached_target and self.target_position:
+            self.direction = self.target_position - pygame.math.Vector2(self.rect.center)
+            if self.direction.length() < 5:  # If close enough to the target
+                self.rect.center = self.target_position
+                self.direction = pygame.math.Vector2()
+                self.reached_target = True
+            else:
+                self.direction = self.direction.normalize()
+
         super().update(dt)
 
         if self.speech_bubble and self.speech_bubble_start_time:
@@ -115,24 +147,46 @@ class Character(Entity):
         if self.following_leader:
             self.follow(self.following_leader, dt)
 
-    def follow(self, leader, dt):
-        # Calculate the direction towards the leader
-        direction = pygame.math.Vector2(leader.rect.center) - pygame.math.Vector2(self.rect.center)
-        distance = direction.length()
+class GifAnimation(pygame.sprite.Sprite):
+    def __init__(self, pos, gif_path, size, groups):
+        super().__init__(groups)
+        self.frames = self.load_gif_frames(gif_path, size)
+        self.frame_index = 0
+        self.image = self.frames[self.frame_index] if self.frames else pygame.Surface((0, 0))
+        self.rect = self.image.get_rect(topleft=pos)
+        self.size = size  # Store the desired size
 
-        if distance > leader.trail_distance:
-            # Move towards the leader if far enough away, but don't get too close
-            self.direction = direction.normalize()
-            self.rect.center += self.direction * self.speed * dt
+    def load_gif_frames(self, gif_path, size):
+        frames = []
+        try:
+            gif = pygame.image.load(gif_path).convert_alpha()
+            gif_width, gif_height = gif.get_size()
 
-        # Sync the animation frame with the leader for consistent appearance
-        self.frame_index = leader.frame_index
-        self.image = self.frames[leader.get_state()][int(self.frame_index % len(self.frames[leader.get_state()]))]
 
-    def start_following(self, leader):
-        self.following_leader = leader
-        print(f"{self} is now following {leader}.")
+            width, height = size
+            if width <= 0 or height <= 0:
+                raise ValueError("Invalid frame size dimensions.")
 
-    def stop_following(self):
-        self.following_leader = None
-        print(f"{self} stopped following their leader.")
+            num_frames = gif_height // height
+            extra_height = gif_height % height
+
+            for i in range(num_frames):
+                try:
+                    rect = pygame.Rect(0, i * height, gif_width, height)
+                    frame = gif.subsurface(rect).copy()
+                    frame = pygame.transform.scale(frame, size)
+                    frames.append(frame)
+                except pygame.error as e:
+                    print(f"Error extracting frame {i}: {e}")
+                    break
+        except pygame.error as e:
+            print(f"Failed to load GIF: {e}")
+
+        return frames
+
+    def update(self, dt):
+        if self.frames:
+            self.frame_index += 12 * dt
+            self.frame_index %= len(self.frames)  # Ensure frame_index wraps around
+            self.image = self.frames[int(self.frame_index)]
+            self.rect = self.image.get_rect(topleft=self.rect.topleft)  # Update rect position if needed
