@@ -39,15 +39,30 @@ class Game:
         self.test_surface = pygame.Surface(self.world_rect.size)
         self.test_surface.blit(self.world_image, (0, 0))
 
-        gif_path = os.path.join(base_dir, 'graphics', 'gifs', 'f5logo.gif')
-        gif_size = (56, 56)  # Set your desired size
-        gif_pos = (TILE_SIZE * 40, TILE_SIZE * 26)
-        self.gif_animation = GifAnimation(gif_pos, gif_path, gif_size, self.all_sprites)
+        gif1_path = os.path.join(base_dir, 'graphics', 'gifs', 'f5logo.gif')
+        gif1_size = (52, 32)  # Set your desired size
+        gif1_pos = (TILE_SIZE * 40.2, TILE_SIZE * 30.5)
+        self.gif1_animation = GifAnimation(gif1_pos, gif1_path, gif1_size, self.all_sprites)
+
+        gif2_path = os.path.join(base_dir, 'graphics', 'gifs', 'scroll.gif')
+        gif2_size = (52, 32)  # Set your desired size
+        gif2_pos = (TILE_SIZE * 46.2, TILE_SIZE * 30.5)
+        self.gif2_animation = GifAnimation(gif2_pos, gif2_path, gif2_size, self.all_sprites)
+
+        gif3_path = os.path.join(base_dir, 'graphics', 'gifs', 'nginxlogo.gif')
+        gif3_size = (52, 32)  # Set your desired size
+        gif3_pos = (TILE_SIZE * 40.2, TILE_SIZE * 40.5)
+        self.gif3_animation = GifAnimation(gif3_pos, gif3_path, gif3_size, self.all_sprites)
+
+        gif4_path = os.path.join(base_dir, 'graphics', 'gifs', 'ogbluescreen.gif')
+        gif4_size = (52, 32)  # Set your desired size
+        gif4_pos = (TILE_SIZE * 46.2, TILE_SIZE * 40.5)
+        self.gif4_animation = GifAnimation(gif4_pos, gif4_path, gif4_size, self.all_sprites)
+
 
         alex_dialogs = [
             "Hi, I'm Alex! An Engineering Intern at F5/NGINX!",
             "Since a young age, I loved to tinker and mod software!",
-            "I had a coding course when I was younger.",
             "I'm on the NGINX Ingress Controller Team.",
             "My biggest additions is on IP listener and Telemetry.",
             "Oh wait! I need to go to the conference room!"
