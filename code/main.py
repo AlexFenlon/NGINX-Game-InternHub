@@ -95,6 +95,10 @@ class Game:
                               self.all_sprites, self.world_rect, ["I'm NPC2!"], is_npc=True)
         self.npc3 = Character((TILE_SIZE * 47, TILE_SIZE * 26), self.overworld_frames['characters']['purple_girl'],
                               self.all_sprites, self.world_rect, ["I'm NPC3!"], is_npc=True)
+        self.npc4 = Character((TILE_SIZE * 11, TILE_SIZE * 56), self.overworld_frames['characters']['straw'],
+                              self.all_sprites, self.world_rect, ["I'm NPC3!"], is_npc=True)
+        self.npc5 = Character((TILE_SIZE * 41, TILE_SIZE * 46), self.overworld_frames['characters']['grass_boss'],
+                              self.all_sprites, self.world_rect, ["I'm NPC3!"], is_npc=True)
 
         # Example for a new character with WanderBehavior
         self.moving_character = Character(
