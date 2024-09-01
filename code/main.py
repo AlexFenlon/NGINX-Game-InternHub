@@ -79,53 +79,33 @@ class Game:
 
         # Define the path for each NPC
         npc_paths = {
-            'npc1': [
-                (TILE_SIZE * 10, TILE_SIZE * 40),
-                (TILE_SIZE * 50, TILE_SIZE * 20),
-                (TILE_SIZE * 42, TILE_SIZE * 26),
-                (TILE_SIZE * 5, TILE_SIZE * 9)
-            ],
-            'npc2': [
-                (TILE_SIZE * 20, TILE_SIZE * 20),
-                (TILE_SIZE * 30, TILE_SIZE * 20),
-                (TILE_SIZE * 30, TILE_SIZE * 30),
-                (TILE_SIZE * 20, TILE_SIZE * 30)
-            ],
-            'npc3': [
-                (TILE_SIZE * 12, TILE_SIZE * 33),
-                (TILE_SIZE * 12, TILE_SIZE * 33),
-                (TILE_SIZE * 12, TILE_SIZE * 33),
-                (TILE_SIZE * 12, TILE_SIZE * 33),
-                (TILE_SIZE * 12, TILE_SIZE * 34),
-                (TILE_SIZE * 12, TILE_SIZE * 34),
-                (TILE_SIZE * 12, TILE_SIZE * 34),
-                (TILE_SIZE * 12, TILE_SIZE * 34),
-                (TILE_SIZE * 12, TILE_SIZE * 34)
-
+            'moving_character': [
+                (TILE_SIZE * 18, TILE_SIZE * 8),  # Starting position slightly higher
+                (TILE_SIZE * 35, TILE_SIZE * 10),  # Move further right
+                (TILE_SIZE * 35, TILE_SIZE * 100),  # Move much further down
+                (TILE_SIZE * 18, TILE_SIZE * 100),  # Move left
+                (TILE_SIZE * 18, TILE_SIZE * 8),  # Move up back to the starting position
             ]
         }
 
-
-
         # Add NPCs with PathBehavior
-        self.npc1 = Character((TILE_SIZE * 12, TILE_SIZE * 33), self.overworld_frames['characters']['npc1'],
-                              self.all_sprites, self.world_rect, ["I'm NPC1!"])
-        self.npc1.animation_speed = 2
-        path_behavior1 = PathBehavior(npc_paths['npc3'])
-        self.npc1.set_behavior(path_behavior1)
-
-        self.npc2 = Character((TILE_SIZE * 20, TILE_SIZE * 20), self.overworld_frames['characters']['npc1'],
-                              self.all_sprites, self.world_rect, ["I'm NPC2!"])
-        path_behavior2 = PathBehavior(npc_paths['npc2'])
-        self.npc2.set_behavior(path_behavior2)
+        self.npc1 = Character((TILE_SIZE * 11, TILE_SIZE * 36), self.overworld_frames['characters']['blond'],
+                              self.all_sprites, self.world_rect, ["I'm NPC1!"], is_npc=True)
+        self.npc2 = Character((TILE_SIZE * 11, TILE_SIZE * 16), self.overworld_frames['characters']['hat_girl'],
+                              self.all_sprites, self.world_rect, ["I'm NPC2!"], is_npc=True)
+        self.npc3 = Character((TILE_SIZE * 47, TILE_SIZE * 26), self.overworld_frames['characters']['purple_girl'],
+                              self.all_sprites, self.world_rect, ["I'm NPC3!"], is_npc=True)
 
         # Example for a new character with WanderBehavior
-        new_character_path = [(TILE_SIZE * 10, TILE_SIZE * 10), (TILE_SIZE * 20, TILE_SIZE * 20)]
-        self.new_character = Character((TILE_SIZE * 25, TILE_SIZE * 20),
-                                       self.overworld_frames['characters']['npc1'],
-                                       self.all_sprites, self.world_rect, "")
-        wander_behavior = WanderBehavior(direction_change_interval=1.0)
-        self.new_character.set_behavior(wander_behavior)
+        self.moving_character = Character(
+            (TILE_SIZE * 18, TILE_SIZE * 8),  # Starting position near the top-left of the central cubicle
+            self.overworld_frames['characters']['npc1'],
+            self.all_sprites,
+            self.world_rect,
+            is_npc=True  # Ensure it's marked as an NPC
+        )
+        path_behavior = PathBehavior(npc_paths['moving_character'])
+        self.moving_character.set_behavior(path_behavior)
 
         self.current_character = self.alex
         self.alex.current_character = self.alex

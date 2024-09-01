@@ -60,23 +60,29 @@ class Entity(pygame.sprite.Sprite):
         self.move(dt)
         self.animate(dt)
 
-
 class Character(Entity):
-    def __init__(self, pos, frames, groups, world_rect, dialogs=None):
+    def __init__(self, pos, frames, groups, world_rect, dialogs=None, is_npc=False):
         super().__init__(pos, frames, groups, world_rect)
         self.behavior = Behavior()
         self.team = []
         self.is_team_member = False
         self.current_character = None
-        self.dialogs = dialogs if dialogs else ["Default dialog."]  # Assign the dialog list or a default one
+        self.dialogs = dialogs if dialogs else ["Default dialog."]
         self.current_dialog_index = 0
         self.speech_bubble = None
         self.speech_bubble_start_time = None
         self.stop_moving = False
-        self.following_leader = None  # Track the leader this character is following
-
+        self.following_leader = None
         self.target_position = None  # The target position the character should move toward
         self.reached_target = True  # Indicates whether the character has reached the target
+
+        # Add these attributes for NPC-specific movement
+        self.is_npc = is_npc
+        self.original_y = self.rect.y
+        self.movement_direction = 1
+        self.movement_interval = 5000  # 5 seconds
+        self.movement_distance = 5  # Move 5 pixels up and down
+        self.last_movement_time = pygame.time.get_ticks()
 
     def set_behavior(self, behavior):
         self.behavior = behavior
@@ -127,9 +133,10 @@ class Character(Entity):
     def update(self, dt):
         if self.behavior:
             self.behavior.update(self, dt)
+
         if not self.reached_target and self.target_position:
             self.direction = self.target_position - pygame.math.Vector2(self.rect.center)
-            if self.direction.length() < 5:  # If close enough to the target
+            if self.direction.length() < 5:
                 self.rect.center = self.target_position
                 self.direction = pygame.math.Vector2()
                 self.reached_target = True
@@ -138,14 +145,36 @@ class Character(Entity):
 
         super().update(dt)
 
+        if self.is_npc:
+            self.npc_up_down_movement()  # Apply the bobbing movement
+
         if self.speech_bubble and self.speech_bubble_start_time:
             if pygame.time.get_ticks() - self.speech_bubble_start_time > 5000:
                 self.speech_bubble = None
                 self.speech_bubble_start_time = None
 
-        # If following a leader, adjust the movement
         if self.following_leader:
             self.follow(self.following_leader, dt)
+
+    def npc_up_down_movement(self):
+        current_time = pygame.time.get_ticks()
+
+        if self.movement_direction == 1:  # Moving down
+            if current_time - self.last_movement_time >= self.movement_interval:
+                self.rect.y += self.movement_distance
+                self.movement_direction = -1  # Change direction to up
+                self.last_movement_time = current_time  # Reset the timer for the delay before moving up
+
+        elif self.movement_direction == -1:  # Wait before moving up
+            if current_time - self.last_movement_time >= 500:  # 500ms delay before moving back up
+                self.rect.y -= self.movement_distance
+                self.movement_direction = 0  # Set to 0 to indicate waiting for the next cycle
+                self.last_movement_time = current_time  # Reset the timer for the next movement cycle
+
+        elif self.movement_direction == 0:  # Wait before starting the next cycle
+            if current_time - self.last_movement_time >= self.movement_interval:
+                self.movement_direction = 1  # Reset direction for the next cycle
+
 
 class GifAnimation(pygame.sprite.Sprite):
     def __init__(self, pos, gif_path, size, groups):
@@ -190,3 +219,20 @@ class GifAnimation(pygame.sprite.Sprite):
             self.frame_index %= len(self.frames)  # Ensure frame_index wraps around
             self.image = self.frames[int(self.frame_index)]
             self.rect = self.image.get_rect(topleft=self.rect.topleft)  # Update rect position if needed
+
+class PathBehavior:
+    def __init__(self, path, speed=300):
+        self.path = path
+        self.current_target_index = 0
+        self.speed = speed
+
+    def update(self, character, dt):
+        target_pos = pygame.math.Vector2(self.path[self.current_target_index])
+        direction = target_pos - pygame.math.Vector2(character.rect.center)
+        distance = direction.length()
+
+        if distance < 5:  # If close enough to the target, move to the next point
+            self.current_target_index = (self.current_target_index + 1) % len(self.path)
+        else:
+            character.direction = direction.normalize()
+            character.rect.center += character.direction * self.speed * dt
