@@ -61,12 +61,12 @@ class Game:
         ]
 
         stephen_dialogs = [
-            "Hey, I'm Stephen, yet another engineering intern (there's dozens of us).",
+            "Hey, I'm Stephen, another engineering intern at f5/NGINX.",
             "Graduating this year from Munster Technological University?",
-            "I have been passionate about tech from an early age.",
-            "I am on the delivery engineering team",
-            "I work under Sergey and my Mentor/Buddy Sean",
-            "The rest of the team have been amazing to work with on my journey",
+            "I started at f5 in february of this year.",
+            "My experience at NGINX/F5 has been like no other",
+            "Im on the delivery eng. team, under Sergey nad my buddy Sean!",
+            "Ive worked on some interesting/challenging projects",
             "I'm late! The lads are waiting in the conference room"
         ]
 
