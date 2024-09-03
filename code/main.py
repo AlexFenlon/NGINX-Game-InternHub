@@ -77,8 +77,7 @@ class Game:
 
         stephen_dialogs = [
             "Hey, I'm Stephen, another engineering intern at f5/NGINX.",
-            "Graduating this year from Munster Technological University?",
-            "I started at f5 in february of this year.",
+            "Graduating this year from Munster Technological University",
             "My experience at NGINX/F5 has been like no other",
             "Im on the delivery eng. team, under Sergey nad my buddy Sean!",
             "Ive worked on some interesting/challenging projects",
