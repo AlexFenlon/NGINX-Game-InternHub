@@ -85,11 +85,11 @@ class Game:
             "I'm late! The lads are waiting in the conference room"
         ]
 
-        self.alex = Character((TILE_SIZE * 34, TILE_SIZE * 18), self.overworld_frames['characters']['alex'],
+        self.alex = Character((TILE_SIZE * 34, TILE_SIZE * 20), self.overworld_frames['characters']['alex'],
                               self.all_sprites, self.world_rect, alex_dialogs)
-        self.spencer = Character((TILE_SIZE * 39, TILE_SIZE * 65), self.overworld_frames['characters']['spencer'],
+        self.spencer = Character((TILE_SIZE * 37, TILE_SIZE * 52), self.overworld_frames['characters']['spencer'],
                                  self.all_sprites, self.world_rect, spencer_dialogs)
-        self.stephen = Character((TILE_SIZE * 7, TILE_SIZE * 95), self.overworld_frames['characters']['stephen'],
+        self.stephen = Character((TILE_SIZE * 13, TILE_SIZE * 46), self.overworld_frames['characters']['stephen'],
                                  self.all_sprites, self.world_rect, stephen_dialogs)
 
         # Define the path for each NPC
