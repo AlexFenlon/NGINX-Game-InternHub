@@ -1,7 +1,7 @@
 import os
-import time
-
 import pygame
+import asyncio
+import pygbag
 from settings import WINDOW_WIDTH, WINDOW_HEIGHT
 from entities import Character, GifAnimation
 from groups import AllSprites
@@ -21,11 +21,34 @@ class Game:
         self.setup()
 
     def import_assets(self):
+        # Adjust base_dir to point to the correct location
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        base_dir = os.path.dirname(base_dir)  # Go one level up if needed
+
+        print(f"Base directory: {base_dir}")
+        try:
+            self.world_image_path = os.path.join(base_dir, 'assets', 'graphics', 'map', 'world.png')
+            self.world_image = pygame.image.load(self.world_image_path).convert_alpha()
+            print(f"Loaded world image from: {self.world_image_path}")
+        except pygame.error as e:
+            print(f"Failed to load world image: {e}")
+
+        try:
+            self.gif1_path = os.path.join(base_dir,  'assets', 'graphics', 'gifs', 'f5logo.gif')
+            print(f"Loading GIF1 from: {self.gif1_path}")
+        except pygame.error as e:
+            print(f"Failed to load GIF1: {e}")
+
+        # Update paths for GIFs
+        self.gif1_path = os.path.join(base_dir,  'assets', 'graphics', 'gifs', 'f5logo.gif')
+        print(f"Loading GIF1 from: {self.gif1_path}")
+        # Repeat for other GIFs
+        # Repeat for other GIFs Move up one level if necessary
         self.overworld_frames = {
-            'characters': all_character_import(base_dir, 'graphics', 'characters')
+            'characters': all_character_import(base_dir,  'assets','graphics', 'characters')
         }
 
-        self.world_image_path = os.path.join(base_dir, 'graphics', 'map', 'world.png')
+        self.world_image_path = os.path.join(base_dir, 'assets', 'graphics', 'map', 'world.png')
         try:
             self.world_image = pygame.image.load(self.world_image_path).convert_alpha()
         except pygame.error as e:
@@ -39,26 +62,25 @@ class Game:
         self.test_surface = pygame.Surface(self.world_rect.size)
         self.test_surface.blit(self.world_image, (0, 0))
 
-        gif1_path = os.path.join(base_dir, 'graphics', 'gifs', 'f5logo.gif')
-        gif1_size = (52, 32)  # Set your desired size
+        gif1_path = os.path.join(base_dir, 'assets', 'graphics', 'gifs', 'f5logo.gif')
+        gif1_size = (52, 32)
         gif1_pos = (TILE_SIZE * 40.2, TILE_SIZE * 30.5)
         self.gif1_animation = GifAnimation(gif1_pos, gif1_path, gif1_size, self.all_sprites)
 
-        gif2_path = os.path.join(base_dir, 'graphics', 'gifs', 'scroll.gif')
-        gif2_size = (52, 32)  # Set your desired size
+        gif2_path = os.path.join(base_dir, 'assets', 'graphics', 'gifs', 'scroll.gif')
+        gif2_size = (52, 32)
         gif2_pos = (TILE_SIZE * 46.2, TILE_SIZE * 30.5)
         self.gif2_animation = GifAnimation(gif2_pos, gif2_path, gif2_size, self.all_sprites)
 
-        gif3_path = os.path.join(base_dir, 'graphics', 'gifs', 'nginxlogo.gif')
-        gif3_size = (52, 32)  # Set your desired size
+        gif3_path = os.path.join(base_dir, 'assets', 'graphics', 'gifs', 'nginxlogo.gif')
+        gif3_size = (52, 32)
         gif3_pos = (TILE_SIZE * 40.2, TILE_SIZE * 40.5)
         self.gif3_animation = GifAnimation(gif3_pos, gif3_path, gif3_size, self.all_sprites)
 
-        gif4_path = os.path.join(base_dir, 'graphics', 'gifs', 'ogbluescreen.gif')
-        gif4_size = (52, 32)  # Set your desired size
+        gif4_path = os.path.join(base_dir, 'assets', 'graphics', 'gifs', 'ogbluescreen.gif')
+        gif4_size = (52, 32)
         gif4_pos = (TILE_SIZE * 46.2, TILE_SIZE * 40.5)
         self.gif4_animation = GifAnimation(gif4_pos, gif4_path, gif4_size, self.all_sprites)
-
 
         alex_dialogs = [
             "Hi, I'm Alex! An Engineering Intern at F5/NGINX!",
@@ -91,18 +113,16 @@ class Game:
         self.stephen = Character((TILE_SIZE * 13, TILE_SIZE * 46), self.overworld_frames['characters']['stephen'],
                                  self.all_sprites, self.world_rect, stephen_dialogs)
 
-        # Define the path for each NPC
         npc_paths = {
             'moving_character': [
-                (TILE_SIZE * 18, TILE_SIZE * 8),  # Starting position slightly higher
-                (TILE_SIZE * 35, TILE_SIZE * 10),  # Move further right
-                (TILE_SIZE * 35, TILE_SIZE * 100),  # Move much further down
-                (TILE_SIZE * 18, TILE_SIZE * 100),  # Move left
-                (TILE_SIZE * 18, TILE_SIZE * 8),  # Move up back to the starting position
+                (TILE_SIZE * 18, TILE_SIZE * 8),
+                (TILE_SIZE * 35, TILE_SIZE * 10),
+                (TILE_SIZE * 35, TILE_SIZE * 100),
+                (TILE_SIZE * 18, TILE_SIZE * 100),
+                (TILE_SIZE * 18, TILE_SIZE * 8),
             ]
         }
 
-        # Add NPCs with PathBehavior
         self.npc1 = Character((TILE_SIZE * 11, TILE_SIZE * 36), self.overworld_frames['characters']['blond'],
                               self.all_sprites, self.world_rect, ["I'm NPC1!"], is_npc=True)
         self.npc2 = Character((TILE_SIZE * 11, TILE_SIZE * 16), self.overworld_frames['characters']['hat_girl'],
@@ -114,13 +134,12 @@ class Game:
         self.npc5 = Character((TILE_SIZE * 41, TILE_SIZE * 46), self.overworld_frames['characters']['grass_boss'],
                               self.all_sprites, self.world_rect, ["I'm NPC3!"], is_npc=True)
 
-        # Example for a new character with WanderBehavior
         self.moving_character = Character(
-            (TILE_SIZE * 18, TILE_SIZE * 8),  # Starting position near the top-left of the central cubicle
+            (TILE_SIZE * 18, TILE_SIZE * 8),
             self.overworld_frames['characters']['npc1'],
             self.all_sprites,
             self.world_rect,
-            is_npc=True  # Ensure it's marked as an NPC
+            is_npc=True
         )
         path_behavior = PathBehavior(npc_paths['moving_character'])
         self.moving_character.set_behavior(path_behavior)
@@ -134,7 +153,6 @@ class Game:
             return
 
         if self.current_character:
-            # Define the target location where the current character should move
             target_positions = {
                 self.alex: (TILE_SIZE * 31, TILE_SIZE * 109),
                 self.spencer: (TILE_SIZE * 29, TILE_SIZE * 110),
@@ -146,7 +164,6 @@ class Game:
                 self.current_character.move_to(target_position)
                 self.facing_direction = 'down'
 
-        # Switch the current character
         self.current_character = new_character
         self.camera_target = new_character
         self.all_sprites.set_camera(new_character.rect, self.world_rect)
@@ -177,14 +194,14 @@ class Game:
         self.setup()
         print("Game restarted.")
 
-    def run(self):
+    async def run(self):
         keypresses = {}
         while True:
             dt = self.clock.tick(60) / 1000
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                    exit()
+                    return  # Exit the loop instead of using exit()
                 if event.type == pygame.KEYDOWN:
                     key = event.key
                     if key in [pygame.K_1, pygame.K_2, pygame.K_3]:
@@ -201,7 +218,6 @@ class Game:
                     elif key == pygame.K_e:
                         dialogue = self.current_character.interact()
                         if self.current_character.speech_bubble is None:
-                            # Define the size of the speech bubble
                             bubble_width, bubble_height = 300, 100
                             self.current_character.speech_bubble = pygame.Surface((bubble_width, bubble_height),
                                                                                   pygame.SRCALPHA)
@@ -213,24 +229,20 @@ class Game:
                                               border_width=5)
 
                             font = pygame.font.Font(None, 36)
-                            max_text_width = bubble_width - 20  # Adjust according to your bubble size and padding
+                            max_text_width = bubble_width - 20
 
-                            # Wrap the text to fit within the bubble
                             lines = wrap_text(dialogue, font, max_text_width)
 
-                            # Render each line separately
                             y_offset = 10
                             for line in lines:
                                 text = font.render(line, True, (0, 0, 0))
                                 self.current_character.speech_bubble.blit(text, (10, y_offset))
                                 y_offset += font.get_height()
-                    elif key == pygame.K_RETURN:  # Handle Enter key for dialog cycling
+                    elif key == pygame.K_RETURN:
                         if self.current_character.speech_bubble:
-                            # Go to the next dialog
                             self.current_character.next_dialog()
                             dialogue = self.current_character.interact()
 
-                            # Update the speech bubble with the new dialog
                             bubble_width, bubble_height = 300, 100
                             self.current_character.speech_bubble = pygame.Surface((bubble_width, bubble_height),
                                                                                   pygame.SRCALPHA)
@@ -242,12 +254,10 @@ class Game:
                                               border_width=5)
 
                             font = pygame.font.Font(None, 36)
-                            max_text_width = bubble_width - 20  # Adjust according to your bubble size and padding
+                            max_text_width = bubble_width - 20
 
-                            # Wrap the text to fit within the bubble
                             lines = wrap_text(dialogue, font, max_text_width)
 
-                            # Render each line separately
                             y_offset = 10
                             for line in lines:
                                 text = font.render(line, True, (0, 0, 0))
@@ -275,56 +285,47 @@ class Game:
             self.all_sprites.draw(self.display_surface)
 
             if self.current_character.speech_bubble:
-                # Update the position of the speech bubble to follow the player
                 bubble_x = self.current_character.rect.centerx - self.current_character.speech_bubble.get_width() // 2
                 bubble_y = self.current_character.rect.top - self.current_character.speech_bubble.get_height() - 10
                 bubble_position = (bubble_x + self.all_sprites.offset.x, bubble_y + self.all_sprites.offset.y)
 
-                # Draw the speech bubble
                 self.display_surface.blit(self.current_character.speech_bubble, bubble_position)
 
-            pygame.display.update()
+            pygame.display.flip()  # Use flip instead of update()
+
+            await asyncio.sleep(0)  # Yield control to event loop
 
 def pixel_to_tile(pixel_pos, tile_size):
     return pixel_pos // tile_size
 
 def print_character_location(character):
-    # Get the pixel position of the character's center
     x_pixel, y_pixel = character.rect.center
-    # Convert pixel position to tile coordinates
     x_tile = pixel_to_tile(x_pixel, TILE_SIZE)
     y_tile = pixel_to_tile(y_pixel, TILE_SIZE)
-    # Print the location in TILE_SIZE * X format
     print(f"Character's Location: TILE_SIZE * {x_tile}, TILE_SIZE * {y_tile}")
 
 def wrap_text(text, font, max_width):
-    """Wrap text into multiple lines that fit within max_width."""
     words = text.split(' ')
     lines = []
     current_line = ""
 
     for word in words:
-        # Check if adding the next word exceeds the max width
         test_line = current_line + word + " "
         if font.size(test_line)[0] <= max_width:
             current_line = test_line
         else:
-            # If it exceeds, save the current line and start a new one
             lines.append(current_line.strip())
             current_line = word + " "
 
-    # Add the last line
     if current_line:
         lines.append(current_line.strip())
 
     return lines
 
 def draw_rounded_rect(surface, color, rect, radius, border_color=None, border_width=0):
-    """Draws a rounded rectangle with optional border."""
     rect = pygame.Rect(rect)
     shape_surf = pygame.Surface(rect.size, pygame.SRCALPHA)
 
-    # Draw the filled rounded rectangle
     pygame.draw.rect(shape_surf, color, shape_surf.get_rect(), border_radius=radius)
 
     if border_color and border_width > 0:
@@ -334,5 +335,4 @@ def draw_rounded_rect(surface, color, rect, radius, border_color=None, border_wi
 
 if __name__ == '__main__':
     game = Game()
-    game.run()
-    pygame.display.update()
+    asyncio.run(game.run())  # Run the async game loop
